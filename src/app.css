@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+	.cell {
+		@apply border border-black aspect-square rounded-none w-full h-full flex justify-center items-center;
+	}
+}
