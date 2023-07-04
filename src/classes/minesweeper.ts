@@ -69,6 +69,7 @@ export default class minesweeper {
 			for (let j = 0; j < this.size; j++) {
 				// Make sure bomb does not spawn where user clicked
 				if (i === skipRow && j === skipCol) {
+					// TODO: Change logic to only show numbered ones if not bomb, and add numbers to bomb squares
 					col.push({
 						pos: [i, j],
 						bomb: false,
@@ -147,6 +148,7 @@ export default class minesweeper {
 	}
 
 	isSweeped() {
+		// TODO: Convert to 1D array, check if it contains non bomb that is not revealed
 		for (let i = 0; i < this.size; i++) {
 			for (let j = 0; j < this.size; j++) {
 				if (this.board[i][j].bomb === false && this.board[i][j].revealed === false) {
