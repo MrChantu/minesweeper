@@ -35,7 +35,6 @@ export default class minesweeper {
 	}
 
 	getNeighbors(pos: number[]) {
-		// All sides of a square on the board
 		const [posCol, posRow] = pos;
 		const neighbors = [];
 		for (const side of sides) {
@@ -69,7 +68,7 @@ export default class minesweeper {
 			for (let j = 0; j < this.size; j++) {
 				// Make sure bomb does not spawn where user clicked
 				if (i === skipRow && j === skipCol) {
-					// TODO: Change logic to only show numbered ones if not bomb, and add numbers to bomb squares
+					// TODO: Change logic to only show numbered ones if not bomb, and add numbers to bomb squares.
 					col.push({
 						pos: [i, j],
 						bomb: false,
@@ -79,7 +78,7 @@ export default class minesweeper {
 					});
 				} else {
 					const randomNum = Math.random();
-					// If randonNum <= 0.2, it is true
+					// If randonNum <= 0.2, it is true.
 					col.push({
 						pos: [i, j],
 						bomb: randomNum <= 0.2,
@@ -97,12 +96,12 @@ export default class minesweeper {
 	generateNumbers() {
 		for (let i = 0; i < this.size; i++) {
 			for (let j = 0; j < this.size; j++) {
-				// Only place numbers on non bomb squares
+				// Only place numbers on non bomb squares.
 				if (this.board[i][j].bomb === false) {
 					const neighbors = this.getNeighbors([i, j]);
 					for (const neighbor of neighbors) {
 						const [nCol, nRow] = neighbor;
-						// If this neighbor is a bomb add 1 to the original pos number
+						// If this neighbor is a bomb add 1 to the original pos number.
 						if (this.board[nCol][nRow].bomb === true) {
 							this.board[i][j].number += 1;
 						}
@@ -118,12 +117,9 @@ export default class minesweeper {
 			this.board[posCol][posRow].flag = !this.board[posCol][posRow].flag;
 		}
 	}
-	// Will recursively keep revealing neighbors until it finds a neighbor that is a bomb
+	// Will recursively keep revealing neighbors until it finds a neighbor that is a number next to a bomb.
+	// Depth will be for stopping to many neighbors from revealing.
 	reveal(pos: number[], depth = 0) {
-		// If pos is bomb, return "bomb" or something (don't reveal) and handle game over or subtract life
-		// Returning "bomb" is important because if it is first function call you need to just return and call game over on that pos (whever user clicked)
-		// Else reveal this pos, and get neighbors of this pos
-		// Pass in all those neighbors to this function, and repeat
 		const [posCol, posRow] = pos;
 
 		if (this.board[posCol][posRow].revealed === false && this.board[posCol][posRow].number > 0) {
@@ -148,14 +144,7 @@ export default class minesweeper {
 	}
 
 	isSweeped() {
-		// TODO: Convert to 1D array, check if it contains non bomb that is not revealed
-		for (let i = 0; i < this.size; i++) {
-			for (let j = 0; j < this.size; j++) {
-				if (this.board[i][j].bomb === false && this.board[i][j].revealed === false) {
-					return false;
-				}
-			}
-		}
-		return true;
+		// If the board contains a square that is not revealed, it is not sweeped.
+		return this.board.flat().some((e) => !e.bomb && !e.revealed) ? false : true;
 	}
 }
