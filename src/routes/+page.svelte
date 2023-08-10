@@ -2,11 +2,22 @@
 	import minesweeper from '../classes/minesweeper';
 	import { Bomb, Flag } from 'lucide-svelte';
 	import GameOver from './GameOver.svelte';
+	import Settings from './Settings.svelte';
 
 	let generatedGame = false;
-	let game = new minesweeper();
 	let gameOver = false;
 	let gameWin = false;
+	// Change on slide input
+	let boardSize = 15;
+	let bombChance = 0.25;
+	let game = new minesweeper(boardSize, bombChance);
+
+	$: {
+		// TODO: Figure out how to only run these when boardSize or bombChance changes.
+		// boardSize, bombChance && handleRestart
+		game = new minesweeper(boardSize, bombChance);
+		generatedGame = false;
+	}
 
 	function handleGeneration(positionToSkip: number[]) {
 		game.generateFullBoard(positionToSkip);
@@ -40,15 +51,23 @@
 	}
 
 	function handleRestart() {
-		game = new minesweeper();
+		game = new minesweeper(boardSize, bombChance);
 		generatedGame = false;
 		gameOver = false;
 		gameWin = false;
 	}
+
+	// function updateGameParams(size: number, chance: number) {
+	// 	boardSize = size;
+	// 	bombChance = chance;
+	// }
 </script>
 
-<div class="h-screen flex justify-center items-center">
-	<div class="grid grid-cols-10 grid-rows-10 p-5 flex-1 max-w-5xl relative">
+<div class="h-screen flex justify-center items-center p-5 gap-5">
+	<div
+		style={`grid-template-columns: repeat(${boardSize}, minmax(0, 1fr)); grid-template-rows: repeat(${boardSize}, minmax(0, 1fr))`}
+		class="grid flex-1 max-w-5xl relative"
+	>
 		{#if !generatedGame}
 			<!-- Let user first click a cell to be omitted from bomb generation -->
 			{#each game.board.flat() as cell}

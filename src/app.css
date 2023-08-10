@@ -7,3 +7,7 @@
 		@apply border border-black aspect-square rounded-none w-full h-full flex justify-center items-center select-none;
 	}
 }
+
+.no-click-effect {
+	pointer-events: none;
+}

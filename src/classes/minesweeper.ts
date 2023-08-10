@@ -13,18 +13,20 @@ const sides = [
 
 export default class minesweeper {
 	size: number;
+	bombChance: number;
 	board: Array<cell[]>;
 
-	constructor() {
-		this.size = 10;
-		this.board = this.generateEmptyBoard();
+	constructor(size: number, bombChance: number) {
+		this.size = size;
+		this.bombChance = bombChance;
+		this.board = this.generateEmptyBoard(size);
 	}
 
-	generateEmptyBoard() {
+	generateEmptyBoard(size: number) {
 		const arr = [];
-		for (let i = 0; i < 10; i++) {
+		for (let i = 0; i < size; i++) {
 			const col = [];
-			for (let j = 0; j < 10; j++) {
+			for (let j = 0; j < size; j++) {
 				col.push({
 					pos: [i, j]
 				});
@@ -41,12 +43,7 @@ export default class minesweeper {
 			const [nCol, nRow] = side;
 			const neighbor = [posCol + nCol, posRow + nRow];
 			// Check if this neighbor is not out of bounds
-			if (
-				neighbor[0] >= 0 &&
-				neighbor[0] < this.size &&
-				neighbor[1] >= 0 &&
-				neighbor[1] < this.size
-			) {
+			if (this.checkIfPosValid(neighbor)) {
 				neighbors.push([posCol + nCol, posRow + nRow]);
 			}
 		}
@@ -60,7 +57,6 @@ export default class minesweeper {
 	}
 
 	generateBombs(positionToSkip: number[]) {
-		// 20% chance
 		const [skipRow, skipCol] = positionToSkip;
 		const arr = [];
 		for (let i = 0; i < this.size; i++) {
@@ -68,7 +64,6 @@ export default class minesweeper {
 			for (let j = 0; j < this.size; j++) {
 				// Make sure bomb does not spawn where user clicked
 				if (i === skipRow && j === skipCol) {
-					// TODO: Change logic to only show numbered ones if not bomb, and add numbers to bomb squares.
 					col.push({
 						pos: [i, j],
 						bomb: false,
@@ -78,10 +73,10 @@ export default class minesweeper {
 					});
 				} else {
 					const randomNum = Math.random();
-					// If randonNum <= 0.2, it is true.
 					col.push({
 						pos: [i, j],
-						bomb: randomNum <= 0.2,
+						// bombChance 0.0 - 1.0 (1.0 is 100% bombs)
+						bomb: randomNum <= this.bombChance,
 						flag: false,
 						revealed: false,
 						number: 0
@@ -91,6 +86,14 @@ export default class minesweeper {
 			arr.push(col);
 		}
 		this.board = arr;
+
+		// Uncover some neighbors next to the positionToSkip (make them not bombs)
+		const neighbors = this.getNeighbors(positionToSkip);
+
+		for (const neighbor of neighbors) {
+			const [row, col] = neighbor;
+			this.board[row][col].bomb = false;
+		}
 	}
 
 	generateNumbers() {
@@ -146,5 +149,12 @@ export default class minesweeper {
 	isSweeped() {
 		// If the board contains a square that is not revealed, it is not sweeped.
 		return this.board.flat().some((e) => !e.bomb && !e.revealed) ? false : true;
+	}
+
+	checkIfPosValid(pos: number[]) {
+		if (pos[0] >= 0 && pos[0] < this.size && pos[1] >= 0 && pos[1] < this.size) {
+			return true;
+		}
+		return false;
 	}
 }
